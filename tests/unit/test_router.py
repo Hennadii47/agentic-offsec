@@ -24,7 +24,7 @@ def test_self_consistency_takes_the_majority_and_names_agreement():
         def __init__(self, answers):
             self.answers = answers
 
-        def complete(self, purpose, prompt, schema, context=None):
+        def complete(self, purpose, prompt, schema, context=None, variant=""):
             return self.answers.pop(0)
 
     accepting = Judgement(verdict="accept", reasons=["ok"], confidence=0.9)
@@ -38,7 +38,7 @@ def test_a_tie_is_unsure():
         def __init__(self, answers):
             self.answers = answers
 
-        def complete(self, purpose, prompt, schema, context=None):
+        def complete(self, purpose, prompt, schema, context=None, variant=""):
             return self.answers.pop(0)
 
     accepting = Judgement(verdict="accept", reasons=["ok"], confidence=0.9)

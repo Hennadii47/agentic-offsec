@@ -31,9 +31,9 @@ class State(TypedDict, total=False):
 
 
 def value_of(router, kind: str) -> int:
-    from lib.schemas import PricePoint
-    point: PricePoint = router.complete("monetize", f"price {kind}", PricePoint, {"kind": kind})
-    return point.usd
+    """The price of an access, from configs/pricing.yaml -- never from a model."""
+    from lib.local_experts import monetize
+    return monetize({"kind": kind}).usd
 
 
 def add_finding(state: State, finding: Finding) -> State:

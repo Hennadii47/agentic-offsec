@@ -7,7 +7,7 @@ from pathlib import Path
 from langgraph.graph import END, StateGraph
 
 from graphs.common import State, add_finding, value_of
-from lib import assets, cloud
+from lib import assets, cloud, prompts
 from lib.schemas import CloudKeys, Finding
 
 VALUE = {"aws": "cloud_admin", "yandex": "cloud_admin", "gcp": "cloud_admin",

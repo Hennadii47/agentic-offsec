@@ -7,7 +7,7 @@ from pathlib import Path
 from langgraph.graph import END, StateGraph
 
 from graphs.common import State, add_finding, value_of
-from lib import marketplace
+from lib import marketplace, plugins, prompts
 from lib.schemas import Finding, PluginVerdict
 
 
@@ -36,8 +36,11 @@ def harvest(state: State, *, router, audit, limits) -> State:
 def audit_plugins(state: State, *, router, audit, limits) -> State:
     rows = []
     for path in state.get("_plugins", []):
-        verdict: PluginVerdict = router.complete("plugin_audit", f"audit {path.name}", PluginVerdict,
-                                                 {"path": str(path), "downloads": 0})
+        # The parser reads the bundle; the model judges what the parser read.
+        facts = plugins.scan_vsix(path) if path.suffix == ".vsix" else plugins.scan_jar(path)
+        evidence = {"path": str(path), "downloads": 0, "parsed": facts.model_dump()}
+        verdict: PluginVerdict = router.complete(
+            "plugin_audit", prompts.build("plugin_audit", evidence, PluginVerdict), PluginVerdict, evidence)
         rows.append(verdict.risk)
     audit.log("d.audit", plugins=len(rows))
     return {**state, "_risks": rows}

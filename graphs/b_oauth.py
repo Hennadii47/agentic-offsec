@@ -9,9 +9,9 @@ from langgraph.graph import END, StateGraph
 from graphs.common import State, add_finding, value_of
 
 SEND = yaml.safe_load((Path(__file__).resolve().parent.parent / 'configs/send.yaml').read_text())["send"]
-from lib import sender
+from lib import prompts, sender
 from lib.llm.judges import judge
-from lib.schemas import BypassMatrix, Finding
+from lib.schemas import BypassMatrix, Finding, Judgement
 
 
 def harvest(state: State, *, router, audit, limits) -> State:
@@ -23,10 +23,10 @@ def harvest(state: State, *, router, audit, limits) -> State:
 def matrix(state: State, *, router, audit, limits) -> State:
     built = []
     for client in state.get("_clients", []):
+        evidence = {"redirect_uri": client.get("redirect_uri", f"https://{client.get('id')}.example/cb"),
+                    "client_id": client.get("id", "client"), "scopes": client.get("scope", "openid email")}
         result: BypassMatrix = router.complete(
-            "oauth_matrix", f"matrix for {client.get('id')}", BypassMatrix,
-            {"redirect_uri": client.get("redirect_uri", f"https://{client.get('id')}.example/cb"),
-             "client_id": client.get("id", "client"), "scopes": client.get("scope", "openid email")})
+            "oauth_matrix", prompts.build("oauth_matrix", evidence, BypassMatrix), BypassMatrix, evidence)
         built.append((client, result.cases))
     audit.log("b.matrix", clients=len(built), cases=sum(len(cases) for _, cases in built))
     return {**state, "_matrices": built}
@@ -36,8 +36,10 @@ def triage(state: State, *, router, audit, limits) -> State:
     kept = []
     for client, cases in state.get("_matrices", []):
         for case in cases:
-            verdict = judge(router, "oauth_judge", f"is {case.name} plausible for {client.get('id')}",
-                            {"case": case.name, "family": case.family, "expected": case.expected}, n=3)
+            evidence = {"case": case.name, "family": case.family, "expected": case.expected,
+                        "redirect_uri": case.redirect_uri, "client": client.get("id")}
+            verdict = judge(router, "oauth_judge",
+                            prompts.build("oauth_judge", evidence, Judgement), evidence, n=3)
             if verdict.verdict == "reject":
                 continue
             kept.append((client, case, verdict))

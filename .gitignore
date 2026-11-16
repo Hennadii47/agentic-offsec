@@ -7,3 +7,5 @@ node_modules/
 .wrangler/
 .pytest_cache/
 dist/
+.cache/
+dist/

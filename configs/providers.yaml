@@ -5,13 +5,13 @@ providers:
   - id: groq
     kind: openai-compatible
     base_url: https://api.groq.com/openai/v1
-    model: llama-3.3-70b-versatile
+    model: openai/gpt-oss-120b   # the id this key can reach; see /openai/v1/models
     key_env: GROQ_API_KEY
-    rpm: 30
+    rpm: 20                       # what the free tier actually grants, measured
   - id: gemini
     kind: gemini
     base_url: https://generativelanguage.googleapis.com/v1beta
-    model: gemini-1.5-pro
+    model: gemini-2.5-flash        # the id this key can reach; see /v1beta/models
     key_env: GEMINI_API_KEY
     rpm: 15
   - id: offline

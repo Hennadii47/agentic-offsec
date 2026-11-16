@@ -11,7 +11,8 @@ from lib.schemas import Judgement
 
 def judge(router, purpose: str, prompt: str, context: dict[str, Any] | None = None,
           n: int = 3, schema: Type[BaseModel] = Judgement) -> Judgement:
-    answers: list[Judgement] = [router.complete(purpose, prompt, schema, context) for _ in range(n)]
+    answers: list[Judgement] = [router.complete(purpose, prompt, schema, context, variant=f"sample-{index}")
+                                for index in range(n)]
     tally = Counter(answer.verdict for answer in answers)
     verdict, count = tally.most_common(1)[0]
     if list(tally.values()).count(count) > 1:

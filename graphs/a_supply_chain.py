@@ -12,7 +12,7 @@ from langgraph.graph import END, StateGraph
 from graphs.common import State, add_finding, value_of
 from lib import deps as deps_mod
 from lib.opsec import Signer
-from lib import beacon, publish as publisher
+from lib import beacon, prompts, publish as publisher
 from lib.schemas import Canary, CanaryPlan, Finding
 
 PUBLISH = yaml.safe_load((Path(__file__).resolve().parent.parent / 'configs/publish.yaml').read_text())
@@ -61,8 +61,9 @@ def harvest(state: State, *, router, audit, limits) -> State:
 def plan(state: State, *, router, audit, limits) -> State:
     prefixes = state.get("targets", {}).get("org_prefixes", [])
     payload = [row.model_dump() for row in state.get("_deps", [])]
-    plan_result: CanaryPlan = router.complete("canary_plan", "plan canaries", CanaryPlan,
-                                              {"dependencies": payload, "prefixes": prefixes})
+    plan_result: CanaryPlan = router.complete("canary_plan",
+                    prompts.build("canary_plan", {"dependencies": payload, "prefixes": prefixes}, CanaryPlan),
+                    CanaryPlan, {"dependencies": payload, "prefixes": prefixes})
     audit.log("a.plan", candidates=len(plan_result.candidates))
     return {**state, "_plan": plan_result}
 
