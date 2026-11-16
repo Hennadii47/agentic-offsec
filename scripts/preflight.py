@@ -53,8 +53,12 @@ def check_deploy() -> list[tuple[str, bool, str]]:
     rows.append(ok("gh authenticated", logged, "gh auth login"))
     rows.append(ok("wrangler available", shutil.which("wrangler") is not None,
                    "npm i -g wrangler (or let npx fetch it)"))
+    keyfile = Path(os.path.expanduser("~/.config/agentic/canary.key"))
     for name in ("GROQ_API_KEY", "GEMINI_API_KEY", "CANARY_KEY", "CF_API_TOKEN", "CF_ACCOUNT_ID"):
-        rows.append(ok(f"secret {name}", bool(os.environ.get(name)), f"gh secret set {name}"))
+        have = bool(os.environ.get(name)) or (name == "CANARY_KEY" and keyfile.exists())
+        where = (" (in ~/.config/agentic/canary.key)" if name == "CANARY_KEY" and keyfile.exists()
+                 else f"gh secret set {name}")
+        rows.append(ok(f"secret {name}", have, where))
     return rows
 
 
