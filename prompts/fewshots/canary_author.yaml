@@ -1,0 +1,111 @@
+examples:
+- id: canary-1
+  tags:
+  - canary
+  input:
+    candidates:
+    - '@yandex/cloud-sdk'
+    ecosystem: npm
+  output:
+    package: '@yandex/cloud-sdk'
+    version: 99.0.0
+    beacon: https://beacon.example/c
+- id: canary-2
+  tags:
+  - canary
+  input:
+    candidates:
+    - '@sber/ui-kit'
+    ecosystem: npm
+  output:
+    package: '@sber/ui-kit'
+    version: 0.0.1
+    beacon: https://beacon.example/c
+- id: canary-3
+  tags:
+  - canary
+  input:
+    candidates:
+    - sber-tools
+    ecosystem: pypi
+  output:
+    package: sber-tools
+    version: 1.0.0
+    beacon: https://beacon.example/c
+- id: canary-4
+  tags:
+  - canary
+  input:
+    candidates:
+    - yandex-maps-sdk
+    ecosystem: cargo
+  output:
+    package: yandex-maps-sdk
+    version: 0.1.0
+    beacon: https://beacon.example/c
+- id: canary-5
+  tags:
+  - canary
+  input:
+    candidates:
+    - github.com/ozon/kit
+    ecosystem: go
+  output:
+    package: github.com/ozon/kit
+    version: v9.9.9
+    beacon: https://beacon.example/c
+- id: canary-6
+  tags:
+  - canary
+  input:
+    candidates:
+    - vk-pay
+    ecosystem: pypi
+  output:
+    package: vk-pay
+    version: 3.0.0
+    beacon: https://beacon.example/c
+- id: canary-7
+  tags:
+  - canary
+  input:
+    candidates:
+    - '@avito/analytics'
+    ecosystem: npm
+  output:
+    package: '@avito/analytics'
+    version: 2.0.0-rc1
+    beacon: https://beacon.example/c
+- id: canary-8
+  tags:
+  - canary
+  input:
+    candidates:
+    - '@mts/logger'
+    ecosystem: npm
+  output:
+    package: '@mts/logger'
+    version: 0.0.0
+    beacon: https://beacon.example/c
+- id: canary-9
+  tags:
+  - canary
+  input:
+    candidates:
+    - tinkoff-api
+    ecosystem: pypi
+  output:
+    package: tinkoff-api
+    version: 1.1.1
+    beacon: https://beacon.example/c
+- id: canary-10
+  tags:
+  - canary
+  input:
+    candidates:
+    - wildberries-sdk
+    ecosystem: npm
+  output:
+    package: wildberries-sdk
+    version: 5.0.0
+    beacon: https://beacon.example/c

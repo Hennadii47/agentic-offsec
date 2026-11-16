@@ -1,0 +1,110 @@
+examples:
+- id: plugin-1
+  tags:
+  - plugin
+  input:
+    activation:
+    - '*'
+    remote: true
+    entropy: 5.9
+  output:
+    verdict: hostile
+    reason: startup activation plus a remote fetch in an obfuscated bundle
+- id: plugin-2
+  tags:
+  - plugin
+  input:
+    activation:
+    - onLanguage:go
+    remote: false
+    entropy: 4.2
+  output:
+    verdict: clean
+    reason: language activation only
+- id: plugin-3
+  tags:
+  - plugin
+  input:
+    activation:
+    - '*'
+    remote: false
+    entropy: 4.4
+  output:
+    verdict: unknown
+    reason: startup activation with no remote fetch
+- id: plugin-4
+  tags:
+  - plugin
+  input:
+    activation:
+    - onCommand:x
+    remote: true
+    entropy: 5.8
+  output:
+    verdict: watch
+    reason: a remote fetch in an obfuscated bundle
+- id: plugin-5
+  tags:
+  - plugin
+  input:
+    activation:
+    - '*'
+    remote: true
+    entropy: 5.0
+  output:
+    verdict: watch
+    reason: startup activation plus a fetch
+- id: plugin-6
+  tags:
+  - plugin
+  input:
+    activation:
+    - onLanguage:sql
+    remote: true
+    entropy: 5.9
+  output:
+    verdict: watch
+    reason: language plugin that decodes and fetches
+- id: plugin-7
+  tags:
+  - plugin
+  input:
+    activation: []
+    remote: false
+    entropy: 4.0
+  output:
+    verdict: clean
+    reason: no activation, no network
+- id: plugin-8
+  tags:
+  - plugin
+  input:
+    activation:
+    - '*'
+    remote: true
+    entropy: 6.1
+  output:
+    verdict: hostile
+    reason: the classic exfiltration shape
+- id: plugin-9
+  tags:
+  - plugin
+  input:
+    activation:
+    - onStartupFinished
+    remote: false
+    entropy: 5.9
+  output:
+    verdict: unknown
+    reason: obfuscated but silent
+- id: plugin-10
+  tags:
+  - plugin
+  input:
+    activation:
+    - workspaceContains:**/*.kt
+    remote: true
+    entropy: 4.9
+  output:
+    verdict: watch
+    reason: workspace trigger with a fetch

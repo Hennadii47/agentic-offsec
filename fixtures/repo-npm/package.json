@@ -1,0 +1,5 @@
+{
+  "name": "portal",
+  "dependencies": {"react": "^18.2.0", "@yandex/cloud-sdk": "*", "@sber/ui-kit": ""},
+  "devDependencies": {"typescript": "~5.4.0", "@ozon/internal-api": "latest"}
+}

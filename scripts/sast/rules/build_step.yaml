@@ -1,0 +1,21 @@
+rules:
+  - id: ci-installs-from-url
+    severity: high
+    message: a CI step runs a script fetched at build time, so the repository is not the only author
+    pattern: '(?:curl|wget)[^\n|]*\|\s*(?:sudo\s+)?(?:ba)?sh'
+  - id: ci-base64-exec
+    severity: high
+    message: base64 decoded straight into a shell is a payload with no diff to review
+    pattern: 'echo\s+[A-Za-z0-9+/=]{16,}\s*\|\s*base64\s+-d\s*\|\s*(?:ba)?sh'
+  - id: token-on-the-command-line
+    severity: medium
+    message: a token passed as an argument is visible to every process on the runner
+    pattern: '(?:token|secret|password)\s*=\s*[A-Za-z0-9_\-]{16,}'
+  - id: runner-writes-credentials
+    severity: high
+    message: the workflow copies a credential into a place the next step can exfiltrate
+    pattern: 'cat\s+[^|]*id_rsa[^|]*>|>\s*~?/?\.ssh/'
+  - id: unpinned-action
+    severity: low
+    message: an action referenced by tag can be moved under you; a commit sha cannot
+    pattern: 'uses:\s*[\w.\-]+/[\w.\-]+@(?!([0-9a-f]{40}$))(v?[0-9][\w.\-]*)'

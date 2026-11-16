@@ -1,0 +1,27 @@
+name: canary-publish
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run: { description: "print the plan only", default: "true" }
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e .
+      - name: plan and sign
+        env: { CANARY_KEY: "${{ secrets.CANARY_KEY }}" }
+        run: |
+          python - <<'PY'
+          from graphs import a_supply_chain as A
+          from lib.llm.router import Router
+          from lib.opsec import Audit, load_limits
+          from pathlib import Path
+          router, audit, limits = Router(offline=True), Audit(run_id="canary-print"), load_limits()
+          out = A.build(router, audit, limits).invoke({"run_id": "canary-print", "findings": [],
+              "targets": {"repos": ["fixtures/repo-npm"], "org_prefixes": ["@yandex/", "@sber/", "@ozon/"]}})
+          for canary in out.get("_canaries", []):
+              print(canary.name, canary.version, canary.signature[:16], canary.beacon_url)
+          PY

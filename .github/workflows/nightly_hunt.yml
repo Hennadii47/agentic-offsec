@@ -1,0 +1,35 @@
+name: nightly-hunt
+on:
+  schedule: [{ cron: "17 2 * * *" }]
+  workflow_dispatch:
+    inputs:
+      subgraph: { description: "a_supply_chain|b_oauth|c_cloud|d_plugins", default: "c_cloud" }
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e .
+      - name: run one hunt
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CANARY_KEY: ${{ secrets.CANARY_KEY }}
+        run: |
+          python - <<'PY'
+          import os, yaml, pathlib
+          from graphs.supervisor import run_once
+          targets = yaml.safe_load(pathlib.Path("configs/targets.yaml").read_text())
+          run = run_once("nightly", {"repos": targets["supply_chain"]["repos"],
+                                     "clients": targets["oauth"]["clients"],
+                                     "files": [], "plugins": [],
+                                     "org_prefixes": targets["supply_chain"]["org_prefixes"]},
+                          offline=not os.environ.get("GROQ_API_KEY"))
+          for finding in run.findings[:20]:
+              print(finding.subgraph, finding.kind, finding.target, finding.value_usd)
+          PY
+      - uses: actions/upload-artifact@v4
+        with: { name: audit-ledger, path: audits/ }

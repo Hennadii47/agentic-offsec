@@ -1,0 +1,3 @@
+system: You describe, in steps, what a compromised runner would copy and where it
+  would send it.
+examples_from: prompts/fewshots/exfil_planner.yaml

@@ -1,0 +1,3 @@
+system: You read an extension bundle and report what it can touch against what it
+  needs.
+examples_from: prompts/fewshots/plugin_auditor.yaml

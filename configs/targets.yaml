@@ -1,0 +1,19 @@
+# Seed targets. Each entry is a starting point, not a scope: the actors expand it and
+# every result is written to audits/ with the target it came from.
+supply_chain:
+  ecosystems: [npm, pypi, cargo, go]
+  org_prefixes: ["@yandex/", "@sber/", "@tinkoff/", "@ozon/", "@wildberries/", "@avito/", "@vk/", "@mts/"]
+  repos:
+    - https://github.com/yandex/yandex-cloud-examples
+    - https://github.com/ozontech/cute
+    - https://github.com/avito-tech/avito-tech.github.io
+oauth:
+  clients:
+    - {id: "esia", name: "ЕСІА", authorize: "https://esia.gosuslugi.ru/aas/oauth2/ac"}
+    - {id: "yandex", name: "Яндекс ID", authorize: "https://oauth.yandex.ru/authorize"}
+    - {id: "vk", name: "VK ID", authorize: "https://id.vk.com/authorize"}
+cloud:
+  patterns: ["*.tfstate", "values.yaml", ".env", "kubeconfig", "*.tfvars"]
+plugins:
+  markets: [vscode, jetbrains]
+  keywords: ["1c", "bitrix", "yandex-cloud", "sber", "tarantool", "postgrespro"]

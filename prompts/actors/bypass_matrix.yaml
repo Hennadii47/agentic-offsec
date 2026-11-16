@@ -1,0 +1,3 @@
+system: You turn a client configuration into concrete authorisation requests a tester
+  can send.
+examples_from: prompts/fewshots/bypass_matrix.yaml

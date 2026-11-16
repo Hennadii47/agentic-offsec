@@ -1,0 +1,15 @@
+# What an access is worth to a broker, in USD. Used by the monetization worker and by the
+# supervisor to decide which subgraph earns the next minute.
+initial_access:
+  cloud_admin: 50000
+  k8s_cluster_admin: 20000
+  ci_cd_secrets: 8000
+  bank_oauth_token: 12000
+  gov_oauth_token: 15000
+  ide_publisher_account: 5000
+  ssh_key: 3000
+  generic_api_key: 500
+cost_model:
+  github_actions_minute: 0.0
+  cf_worker_request: 0.0
+  llm_token: 0.0

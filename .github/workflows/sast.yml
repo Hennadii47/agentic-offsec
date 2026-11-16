@@ -1,0 +1,15 @@
+name: sast
+on:
+  push: { paths: ["**/*.py", "**/*.ts", "**/*.sh", ".github/workflows/**"] }
+  schedule: [{ cron: "0 3 * * *" }]
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pipx install semgrep
+      - run: semgrep --config scripts/sast/rules --sarif --output semgrep.sarif .
+      - uses: actions/upload-artifact@v4
+        with: { name: semgrep-sarif, path: semgrep.sarif }
+      - name: own rules over the workflow files
+        run: python -m lib.semgrep 2>/dev/null || python -c "from lib.semgrep import run_semgrep; from pathlib import Path; print(len(run_semgrep(Path('.github'))))"

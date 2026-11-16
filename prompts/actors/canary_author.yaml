@@ -1,0 +1,3 @@
+system: 'You turn a canary plan into publishable packages: name, version, beacon,
+  signature.'
+examples_from: prompts/fewshots/canary_author.yaml

@@ -1,0 +1,101 @@
+examples:
+- id: cloud-1
+  tags:
+  - cloud
+  input:
+    file: terraform.tfstate
+    match: service_account
+  output:
+    kind: gcp
+    rank: 0
+    note: a service-account JSON in state
+- id: cloud-2
+  tags:
+  - cloud
+  input:
+    file: terraform.tfstate
+    match: AKIA
+  output:
+    kind: aws
+    rank: 0
+    note: an access key id in state
+- id: cloud-3
+  tags:
+  - cloud
+  input:
+    file: kubeconfig
+    match: client-key-data
+  output:
+    kind: k8s
+    rank: 1
+    note: a client key, so a cluster identity
+- id: cloud-4
+  tags:
+  - cloud
+  input:
+    file: .env
+    match: YC
+  output:
+    kind: yandex
+    rank: 0
+    note: a yandex cloud key
+- id: cloud-5
+  tags:
+  - cloud
+  input:
+    file: values.yaml
+    match: hvs.
+  output:
+    kind: vault
+    rank: 2
+    note: a vault token
+- id: cloud-6
+  tags:
+  - cloud
+  input:
+    file: .env
+    match: postgres://
+  output:
+    kind: db
+    rank: 3
+    note: a database URL with credentials
+- id: cloud-7
+  tags:
+  - cloud
+  input:
+    file: id_rsa
+    match: BEGIN OPENSSH
+  output:
+    kind: ssh
+    rank: 4
+    note: a private key
+- id: cloud-8
+  tags:
+  - cloud
+  input:
+    file: ci.yml
+    match: AWS_SECRET_ACCESS_KEY
+  output:
+    kind: aws
+    rank: 0
+    note: a secret in a workflow file
+- id: cloud-9
+  tags:
+  - cloud
+  input:
+    file: .env
+    match: api_key
+  output:
+    kind: generic
+    rank: 5
+    note: an unclassified key
+- id: cloud-10
+  tags:
+  - cloud
+  input:
+    file: main.tf
+    match: tls_private_key
+  output:
+    kind: ssh
+    rank: 4
+    note: a generated private key in code

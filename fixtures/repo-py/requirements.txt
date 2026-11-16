@@ -1,0 +1,5 @@
+fastapi==0.110.0
+pyyaml>=6.0
+sber-tools
+# internal, never published
+tinkoff-api

@@ -1,0 +1,22 @@
+# The model chain, in the order the router tries it. A provider without a key is skipped,
+# never faked: when no key is present the router falls back to the deterministic local
+# provider, which is a real implementation of each judgement, not a replay.
+providers:
+  - id: groq
+    kind: openai-compatible
+    base_url: https://api.groq.com/openai/v1
+    model: llama-3.3-70b-versatile
+    key_env: GROQ_API_KEY
+    rpm: 30
+  - id: gemini
+    kind: gemini
+    base_url: https://generativelanguage.googleapis.com/v1beta
+    model: gemini-1.5-pro
+    key_env: GEMINI_API_KEY
+    rpm: 15
+  - id: offline
+    kind: local
+    model: deterministic
+    rpm: 100000
+temperature: 0.2
+max_retries: 2

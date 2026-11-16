@@ -1,0 +1,8 @@
+.venv/
+.cache/
+__pycache__/
+*.pyc
+audits/*.jsonl
+node_modules/
+.wrangler/
+.pytest_cache/

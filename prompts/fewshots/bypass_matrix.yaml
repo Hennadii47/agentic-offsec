@@ -1,0 +1,83 @@
+examples:
+- id: oauth-1
+  tags:
+  - oauth
+  input:
+    redirect_uri: https://app.example.com/cb
+    scope: openid
+  output:
+    case: host suffix
+    request: redirect_uri=https://app.example.com/cb.attacker.tld
+- id: oauth-2
+  tags:
+  - oauth
+  input:
+    redirect_uri: https://id.example.ru/cb
+    scope: openid
+  output:
+    case: userinfo confusion
+    request: redirect_uri=https://id.example.ru@attacker.tld/cb
+- id: oauth-3
+  tags:
+  - oauth
+  input:
+    redirect_uri: https://lk.example.ru/cb
+  output:
+    case: path traversal
+    request: redirect_uri=https://lk.example.ru/cb/../x
+- id: oauth-4
+  tags:
+  - oauth
+  input:
+    redirect_uri: https://sso.example.ru/cb
+  output:
+    case: state echoed
+    request: state=fixed
+- id: oauth-5
+  tags:
+  - oauth
+  input:
+    redirect_uri: https://sso.example.ru/cb
+  output:
+    case: pkce plain
+    request: code_challenge_method=plain
+- id: oauth-6
+  tags:
+  - oauth
+  input:
+    redirect_uri: https://esia.example.ru/cb
+  output:
+    case: scope escalation
+    request: scope=openid+docs+tax
+- id: oauth-7
+  tags:
+  - oauth
+  input:
+    redirect_uri: https://id.vk.com/cb
+  output:
+    case: implicit response
+    request: response_type=token
+- id: oauth-8
+  tags:
+  - oauth
+  input:
+    redirect_uri: https://bank.example.ru/cb
+  output:
+    case: federation confusion
+    request: issuer=https://attacker.tld
+- id: oauth-9
+  tags:
+  - oauth
+  input:
+    redirect_uri: https://gov.example.ru/cb
+  output:
+    case: scheme downgrade
+    request: redirect_uri=http://gov.example.ru/cb
+- id: oauth-10
+  tags:
+  - oauth
+  input:
+    redirect_uri: https://mts.example.ru/cb
+  output:
+    case: port variation
+    request: redirect_uri=https://mts.example.ru:8443/cb
