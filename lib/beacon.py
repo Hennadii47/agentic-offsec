@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import json
+import os
+import urllib.parse
+import urllib.request
 from pathlib import Path
 
 from lib.opsec import Signer
@@ -43,3 +46,33 @@ def read_hits_of(records: list[dict], signer: Signer) -> list[Hit]:
                         user_agent=record.get("ua", ""),
                         verified=signer.verify(name, version, record.get("sig", ""))))
     return hits
+
+
+
+def from_cloudflare(namespace_id: str, account_id: str | None = None,
+                    token: str | None = None, limit: int = 200) -> list[dict]:
+    """The beacon worker's KV, read back as records. Nothing is copied by hand."""
+    account = account_id or os.environ.get("CF_ACCOUNT_ID", "")
+    secret = token or os.environ.get("CF_API_TOKEN", "")
+    if not account or not secret:
+        return []
+    base = f"https://api.cloudflare.com/client/v4/accounts/{account}/storage/kv/namespaces/{namespace_id}"
+    headers = {"authorization": f"Bearer {secret}"}
+    with urllib.request.urlopen(urllib.request.Request(base + f"/keys?limit={limit}", headers=headers), timeout=30) as answer:
+        keys = json.loads(answer.read()).get("result", [])
+    records = []
+    for row in keys:
+        url = base + "/values/" + urllib.parse.quote(row["name"])
+        with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=30) as answer:
+            try:
+                records.append(json.loads(answer.read()))
+            except json.JSONDecodeError:
+                continue
+    return records
+
+
+def read_source(source: str, signer: Signer) -> list[Hit]:
+    """HITS is either a JSONL path or cf://<namespace-id>."""
+    if str(source).startswith("cf://"):
+        return read_hits_of(from_cloudflare(str(source)[5:]), signer)
+    return read_hits(source, signer)

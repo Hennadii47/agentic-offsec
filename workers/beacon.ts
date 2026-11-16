@@ -27,7 +27,9 @@ export default {
     if (!(await verify(name, version, signature, env.CANARY_SECRET))) {
       return new Response(JSON.stringify({ error: "signature does not match" }), { status: 403 });
     }
-    const hit = { name, version, at: new Date().toISOString(),
+    // The signature travels with the hit, so the reader can verify it again
+    // instead of trusting whoever wrote the record.
+    const hit = { name, version, sig: signature, at: new Date().toISOString(),
       country: request.cf?.country ?? null, asn: request.cf?.asn ?? null,
       ua: request.headers.get("user-agent") ?? "" };
     await env.HITS.put(`${hit.at}:${name}`, JSON.stringify(hit), { expirationTtl: 60 * 60 * 24 * 180 });

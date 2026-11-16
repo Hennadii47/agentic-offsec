@@ -113,11 +113,11 @@ def publish(state: State, *, router, audit, limits) -> State:
 def monitor(state: State, *, router, audit, limits) -> State:
     """What rang: every hit the beacon recorded, verified against the signing key."""
     source = state.get("targets", {}).get("hits") or PUBLISH["monitor"].get("hits_file")
-    if not source or not Path(source).exists():
+    if not source or (not str(source).startswith("cf://") and not Path(source).exists()):
         audit.log("a.monitor", hits=0, source=None)
         return {**state, "_hits": []}
     signer = Signer.from_key(limits.get("canary_key", "dev-key"))
-    hits = beacon.read_hits(source, signer)
+    hits = beacon.read_source(str(source), signer)
     audit.log("a.monitor", hits=len(hits), verified=sum(1 for hit in hits if hit.verified), source=str(source))
     current = state
     for hit in hits:
