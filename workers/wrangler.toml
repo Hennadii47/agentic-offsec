@@ -1,24 +1,7 @@
-name = "agentic-offsec"
+name = "agentic-offsec-beacon"
 main = "beacon.ts"
 compatibility_date = "2026-09-01"
-account_id = "$CF_ACCOUNT_ID"
 
 [[kv_namespaces]]
 binding = "HITS"
-id = "$CF_KV_HITS"
-
-[[kv_namespaces]]
-binding = "RESULTS"
-id = "$CF_KV_RESULTS"
-
-[[kv_namespaces]]
-binding = "PRICING"
-id = "$CF_KV_PRICING"
-
-[[queues.producers]]
-binding = "PROBES"
-queue = "agentic-offsec-probes"
-
-[[queues.consumers]]
-queue = "agentic-offsec-probes"
-max_batch_size = 10
+id = "79ce4691a851417095ed583394628cb4"

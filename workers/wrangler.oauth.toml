@@ -1,0 +1,12 @@
+name = "agentic-offsec-oauth"
+main = "oauth-fuzzer.ts"
+compatibility_date = "2026-09-01"
+
+[[kv_namespaces]]
+binding = "RESULTS"
+id = "e581bd65573a411ba2a1246302303082"
+
+[[queues.consumers]]
+queue = "agentic-offsec-probes"
+max_batch_size = 10
+max_retries = 3

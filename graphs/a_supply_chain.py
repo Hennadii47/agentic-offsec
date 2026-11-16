@@ -17,7 +17,7 @@ from lib.schemas import Canary, CanaryPlan, Finding
 
 PUBLISH = yaml.safe_load((Path(__file__).resolve().parent.parent / 'configs/publish.yaml').read_text())
 
-BEACON = "https://beacon.example/c"
+BEACON = "https://agentic-offsec-beacon.agentic-offsec-1d7260.workers.dev/c"
 
 
 CACHE = Path(os.environ.get("AGENTIC_REPO_CACHE", Path.home() / ".cache" / "agentic-repos"))

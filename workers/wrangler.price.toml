@@ -1,0 +1,7 @@
+name = "agentic-offsec-price"
+main = "monetization.ts"
+compatibility_date = "2026-09-01"
+
+[[kv_namespaces]]
+binding = "PRICING"
+id = "b39de3c0c28649439647dd52914b0b3a"
