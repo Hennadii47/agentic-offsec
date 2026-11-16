@@ -11,4 +11,4 @@ jobs:
       - run: python -m pytest tests -q
       - name: worker typecheck
         working-directory: workers
-        run: npm install --no-audit --no-fund && NODE_OPTIONS="${NODE_OPTIONS:+$NODE_OPTIONS }--max-old-space-size=6370" npx tsc --noEmit
+        run: npm install --no-audit --no-fund && npx tsc --noEmit
