@@ -36,3 +36,11 @@ def test_only_prefixed_and_unpinned_names_are_candidates(root):
 def test_a_pinned_prefixed_name_is_not_a_candidate():
     rows = [Dependency(name="@sber/ui-kit", version="1.2.3", ecosystem=Ecosystem.npm)]
     assert missing_internal(rows, ["@sber/"]) == []
+
+
+def test_a_go_module_names_its_organisation_after_the_host():
+    from lib.deps import carries_org
+    assert carries_org("github.com/ozon/kit", ["ozon"])
+    assert carries_org("github.com/ozontech/kit", ["ozon"]) is False
+    assert carries_org("@sber/ui-kit", ["@sber/"]) is True
+    assert carries_org("sberbank-api", ["@sber/"]) is False

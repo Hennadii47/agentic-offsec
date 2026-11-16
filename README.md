@@ -30,6 +30,7 @@ spends the next minute where value per second is highest.
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 .venv/bin/python -m pytest tests -q          # 37 tests, no network, no keys
+python scripts/preflight.py                  # CODE READY vs DEPLOY READY, line by line
 bash scripts/deploy.sh --dry-run             # what the deploy would do
 bash scripts/deploy.sh                       # venv, tests, secrets, workers, workflows
 ```
@@ -67,12 +68,27 @@ fixtures/          labelled evidence the evals measure against
 tests/unit         behaviour  ·  tests/evals  golden sets at a 90% floor
 ```
 
+## Closed loops
+
+Each vector now runs the whole way, and every step is switchable:
+
+| vector | plan | act | observe |
+|---|---|---|---|
+| A | harvest → plan → sign | **`lib/publish.py`** builds an npm tarball or a Python sdist and hands it to `npm publish` / `twine` (`mode: dry_run` writes `dist/` and reports the command) | **`lib/beacon.py`** reads the hits, re-signs `name@version` and keeps only verified ones as findings |
+| B | matrix → judge | **`lib/sender.py`** sends each authorisation request with redirects *not* followed, so the `Location` is the answer | the same probe records status and location as evidence |
+| C | extraction → ranking | **`lib/assets.py`** brings an artefact from a URL you give it | every key is a fingerprint, never a secret |
+| D | permission audit | **`lib/marketplace.py`** fetches the `.vsix` the marketplace serves | verdict from the bundle it downloaded |
+
+Scope is enforced, not documented: `lib/sender.py` refuses any host not listed in
+`configs/send.yaml` under `authorized`, and names it in the audit record.
+
 ## Limits, stated plainly
 
 - The offline expert is rule-based: it will not invent a bypass the rules do not know.
-- `b_oauth` generates and judges a matrix; it does not send a request. Sending belongs to
-  `workers/oauth-fuzzer.ts`, against targets you are authorised to touch.
-- `c_cloud` reads files you point it at. Fetching buckets by dork is deliberately not built in.
+- `mode: live` needs an npm/PyPI token; until then `dist/` holds the artefact and the
+  exact command that would publish it.
+- Discovery is not built in: C reads the files and URLs you name, D fetches the extensions
+  you name. Nothing dorks for buckets on its own.
 - No sandbox. Untrusted artefacts are parsed, never executed.
 
 ## The one rule

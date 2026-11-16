@@ -91,6 +91,9 @@ def carries_org(name: str, prefixes: list[str]) -> bool:
         org = prefix.lower().lstrip("@").rstrip("/-_")
         if lowered == org or lowered.startswith(org + "/") or lowered.startswith(org + "-")                 or lowered.startswith(org + "_") or lowered.startswith(org + "."):
             return True
+        # A Go module names its organisation after the host: github.com/ozon/kit.
+        if f"/{org}/" in lowered or lowered.startswith(f"{org}/"):
+            return True
     return False
 
 

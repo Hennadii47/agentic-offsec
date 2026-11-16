@@ -1,17 +1,35 @@
 """D: an extension that can read more than it needs."""
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from langgraph.graph import END, StateGraph
 
 from graphs.common import State, add_finding, value_of
+from lib import marketplace
 from lib.schemas import Finding, PluginVerdict
 
 
 def harvest(state: State, *, router, audit, limits) -> State:
-    files = [Path(path) for path in state.get("targets", {}).get("plugins", []) if Path(path).exists()]
-    audit.log("d.harvest", plugins=len(files))
+    """Local bundles are read where they are; a marketplace entry is fetched first."""
+    cache = Path(os.environ.get("AGENTIC_PLUGIN_CACHE", Path.home() / ".cache" / "agentic-plugins"))
+    files, fetched, failed = [], 0, []
+    for entry in state.get("targets", {}).get("plugins", []):
+        if isinstance(entry, dict):
+            url = marketplace.vsix_url(entry["publisher"], entry["name"], entry.get("version", "latest"))
+            dest = cache / f"{entry['publisher']}.{entry['name']}.vsix"
+            path, why = marketplace.fetch(url, dest)
+            if path is None:
+                failed.append(f"{entry['name']}: {why}")
+                continue
+            files.append(path)
+            fetched += 1
+            continue
+        path = Path(entry)
+        if path.exists():
+            files.append(path)
+    audit.log("d.harvest", plugins=len(files), fetched=fetched, failed=len(failed))
     return {**state, "_plugins": files}
 
 

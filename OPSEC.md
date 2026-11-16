@@ -21,6 +21,12 @@ What keeps a run attributable, polite, and reversible.
 - No retries against a target that answered 4xx: a 404 is an answer.
 - One canary per ecosystem per run. A flood is what gets an account noticed.
 
+## Scope, enforced
+
+`configs/send.yaml` names the hosts B may talk to. `lib/sender.py` refuses anything else
+with `OutOfScope`, and the refusal is an audit record naming the host — a silent skip would
+hide a misconfiguration.
+
 ## Evidence
 
 Every action is one JSONL record: `run_id`, `at`, `action`, its fields, and the ethics line.
@@ -33,6 +39,8 @@ ledger can be shared without a rotation.
 
 1. Only targets you are authorised to test. `configs/targets.yaml` is a list, not a licence.
 2. Read-only where possible: validate a key, never use one to change state.
+2a. A canary is published under an account you control and pings a beacon that verifies its
+    own signature; it collects nothing from the machine it installs on beyond a timestamp.
 3. No persistence, no lateral movement, no exfiltration beyond the proof.
 4. Untrusted artefacts are parsed, never executed — there is no sandbox here.
 5. A run leaves the audit ledger, or it did not happen.

@@ -25,7 +25,8 @@ jobs:
           targets = yaml.safe_load(pathlib.Path("configs/targets.yaml").read_text())
           run = run_once("nightly", {"repos": targets["supply_chain"]["repos"],
                                      "clients": targets["oauth"]["clients"],
-                                     "files": [], "plugins": [],
+                                     "files": targets.get("cloud", {}).get("files", []),
+                                     "plugins": targets.get("plugins", {}).get("entries", []),
                                      "org_prefixes": targets["supply_chain"]["org_prefixes"]},
                           offline=not os.environ.get("GROQ_API_KEY"))
           for finding in run.findings[:20]:

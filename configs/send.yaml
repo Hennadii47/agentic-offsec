@@ -1,0 +1,9 @@
+# B sends only to hosts listed here. A host that is not listed is refused by name.
+send:
+  mode: dry_run            # dry_run builds and validates the request; live sends it
+  authorized:
+    - esia.gosuslugi.ru
+    - oauth.yandex.ru
+    - id.vk.com
+    - sso.example.ru
+  timeout_seconds: 20

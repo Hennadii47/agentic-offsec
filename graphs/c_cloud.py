@@ -1,12 +1,13 @@
 """C: infrastructure written down where anyone can read it."""
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from langgraph.graph import END, StateGraph
 
 from graphs.common import State, add_finding, value_of
-from lib import cloud
+from lib import assets, cloud
 from lib.schemas import CloudKeys, Finding
 
 VALUE = {"aws": "cloud_admin", "yandex": "cloud_admin", "gcp": "cloud_admin",
@@ -15,8 +16,22 @@ VALUE = {"aws": "cloud_admin", "yandex": "cloud_admin", "gcp": "cloud_admin",
 
 
 def harvest(state: State, *, router, audit, limits) -> State:
-    files = [Path(path) for path in state.get("targets", {}).get("files", []) if Path(path).exists()]
-    audit.log("c.harvest", files=len(files))
+    """A path is read where it is; a URL is brought down first."""
+    cache = Path(os.environ.get("AGENTIC_ASSET_CACHE", Path.home() / ".cache" / "agentic-assets"))
+    files, fetched, failed = [], 0, []
+    for entry in state.get("targets", {}).get("files", []):
+        if isinstance(entry, str) and entry.startswith(("http://", "https://")):
+            path, why = assets.fetch(entry, cache)
+            if path is None:
+                failed.append(f"{entry}: {why}")
+                continue
+            files.append(path)
+            fetched += 1
+            continue
+        path = Path(entry)
+        if path.exists():
+            files.append(path)
+    audit.log("c.harvest", files=len(files), fetched=fetched, failed=len(failed))
     return {**state, "_files": files}
 
 

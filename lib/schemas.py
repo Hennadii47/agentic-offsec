@@ -140,3 +140,14 @@ class PluginVerdict(Base):
 class PricePoint(Base):
     usd: int = Field(ge=0)
     reason: str = Field(min_length=1)
+
+
+class Hit(Base):
+    """One installation of a canary, as the beacon recorded it."""
+    name: str
+    version: str
+    at: str
+    country: str | None = None
+    asn: int | None = None
+    user_agent: str = ""
+    verified: bool = False

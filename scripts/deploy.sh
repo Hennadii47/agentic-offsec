@@ -13,6 +13,9 @@ for tool in gh node python3; do
   printf '   %-8s %s\n' "$tool" "$(command -v "$tool")"
 done
 
+say "preflight"
+run .venv/bin/python scripts/preflight.py || { echo "code is not ready; stopping"; exit 1; }
+
 say "python environment"
 run python3 -m venv .venv
 run .venv/bin/pip install -q -e ".[dev]"

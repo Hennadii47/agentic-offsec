@@ -25,6 +25,9 @@ class State(TypedDict, total=False):
     _kept: list
     _plugins: list
     _risks: list
+    _artifacts: list
+    _hits: list
+    _probes: list
 
 
 def value_of(router, kind: str) -> int:

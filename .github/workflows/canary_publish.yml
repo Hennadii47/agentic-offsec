@@ -2,7 +2,7 @@ name: canary-publish
 on:
   workflow_dispatch:
     inputs:
-      dry_run: { description: "print the plan only", default: "true" }
+      mode: { description: "dry_run or live", default: "dry_run" }
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -11,17 +11,27 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: pip install -e .
-      - name: plan and sign
-        env: { CANARY_KEY: "${{ secrets.CANARY_KEY }}" }
+      - name: plan, sign, build, publish, listen
+        env:
+          CANARY_KEY: ${{ secrets.CANARY_KEY }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           python - <<'PY'
+          import yaml, pathlib
           from graphs import a_supply_chain as A
           from lib.llm.router import Router
           from lib.opsec import Audit, load_limits
-          from pathlib import Path
-          router, audit, limits = Router(offline=True), Audit(run_id="canary-print"), load_limits()
-          out = A.build(router, audit, limits).invoke({"run_id": "canary-print", "findings": [],
-              "targets": {"repos": ["fixtures/repo-npm"], "org_prefixes": ["@yandex/", "@sber/", "@ozon/"]}})
-          for canary in out.get("_canaries", []):
-              print(canary.name, canary.version, canary.signature[:16], canary.beacon_url)
+          limits = load_limits()
+          limits["canary_key"] = __import__("os").environ.get("CANARY_KEY", "dev-key")
+          out = A.build(Router(offline=True), Audit(run_id="ci-publish"), limits).invoke({
+              "run_id": "ci-publish", "findings": [],
+              "targets": {"repos": ["fixtures/repo-npm"],
+                          "org_prefixes": ["@yandex/", "@sber/", "@ozon/"],
+                          "hits": "fixtures/hits.jsonl"}})
+          for artifact, outcome in out.get("_artifacts", []):
+              print(artifact.name, artifact.version, artifact.sha256[:12], outcome.get("command"))
+          print("findings", len(out["findings"]),
+                "hits", sum(1 for hit in out.get("_hits", []) if hit.verified))
           PY
+      - uses: actions/upload-artifact@v4
+        with: { name: dist, path: dist/ }

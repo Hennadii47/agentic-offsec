@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: agentic-offsec
+Version: 0.1.0
+Summary: Autonomous offsec research: supply chain, OAuth logic, cloud exposure, plugin supply chain.
+Requires-Python: >=3.11
+Requires-Dist: pydantic>=2.7
+Requires-Dist: pyyaml>=6
+Requires-Dist: langgraph>=0.2
+Provides-Extra: dev
+Requires-Dist: pytest>=8; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.23; extra == "dev"
+Provides-Extra: vectors
+Requires-Dist: chromadb>=0.5; extra == "vectors"

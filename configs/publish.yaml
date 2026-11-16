@@ -1,0 +1,8 @@
+# How a signed canary becomes an install, and how a hit becomes a finding.
+publish:
+  mode: dry_run            # dry_run writes dist/ and reports the command; live runs npm publish / twine
+  npm_registry: null       # e.g. https://registry.npmjs.org
+  pypi_index: null
+monitor:
+  hits_file: null          # a JSONL of beacon records; configs/targets.yaml may name it instead
+  value_usd: 8000
